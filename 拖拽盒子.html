@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		*{
+			margin:0;
+			padding:0;
+			list-style:none;
+		}
+		#box{
+			width:800px;
+			height:200px;
+			border:1px solid green;
+			margin:50px auto;
+		}
+		.lbox{
+			width:150px;
+			height:150px;
+			float:left;
+			margin-left:7px;
+			margin-top:25px;
+			border:1px solid #000;
+		}
+		.rbox{
+			width:150px;
+			height:150px;
+			border:1px dashed #000;
+			background:#CCC;
+			opacity:0.8;
+			position:absolute;
+		}
+		.newbox{
+			width:150px;
+			height:150px;
+			border:1px dashed red;
+			float:left;
+			margin-left:7px;
+			margin-top:25px;
+		}
+	</style>
+</head>
+<body>
+	<div id="box">
+		<div class="lbox">1</div>
+		<div class="lbox">2</div>
+		<div class="lbox">3</div>
+		<div class="lbox">4</div>
+		<div class="lbox">5</div>
+	</div>
+	<script src='jquery-2.1.1.min.js'></script>
+	<script>
+		$(function(){
+			document.body.onselectstart=function(){
+				return false;
+			}
+			$('#box .lbox').on('mousedown',function(e){
+				var newDiv=$(this);
+				var obj={x:0,y:0};
+				obj.x=$(this).offset().left;
+				obj.y=$(this).offset().top;
+				$(this).css({'left':obj.x,'top':obj.y});
+				
+				$(this).css('cursor','move');
+				var X=e.pageX-$(this).offset().left;
+				var Y=e.pageY-$(this).offset().top;
+				$(this).attr('class','rbox');
+
+				$(this).before($('<div class="newbox"></div>'));
+
+				$(document).on('mousemove',function(e){
+					var L=e.pageX-X;
+					var T=e.pageY-Y;
+					$('.rbox').css({'left':L,'top':T});
+
+					$('.lbox').each(function(){
+						var cssdiv=$(this);
+						var half=cssdiv.offset().left+cssdiv.outerWidth()/2;
+						var all=newDiv.offset().left+newDiv.outerWidth();
+						
+						if(all>=half){
+							$('.newbox').insertAfter($(this));
+						}
+
+						var first=$('.lbox').first();
+						var cssLeft=first.offset().left+first.outerWidth()/2;
+						if(newDiv.offset().left<=cssLeft){
+							$('.newbox').insertBefore(first);
+						}
+					})
+					
+
+				}).on("mouseup",function(){
+						newDiv.insertBefore($(".newbox"))
+						newDiv.attr("class","lbox")
+						$(".newbox").remove()
+				})	
+			})
+		})
+	</script>
+</body>
+</html>
